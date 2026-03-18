@@ -1,22 +1,26 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: IT Class Tracker API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: companies
+    description: Company operations
+  - name: courses
+    description: Course operations
+  - name: sessions
+    description: Session log operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +28,160 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /companies:
+    get:
+      operationId: listCompanies
+      tags: [companies]
+      summary: List all companies
+      responses:
+        "200":
+          description: List of companies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Company"
+    post:
+      operationId: createCompany
+      tags: [companies]
+      summary: Create a company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCompanyInput"
+      responses:
+        "201":
+          description: Created company
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+
+  /companies/{id}:
+    delete:
+      operationId: deleteCompany
+      tags: [companies]
+      summary: Delete a company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /courses:
+    get:
+      operationId: listCourses
+      tags: [courses]
+      summary: List all courses
+      responses:
+        "200":
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+    post:
+      operationId: createCourse
+      tags: [courses]
+      summary: Create a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCourseInput"
+      responses:
+        "201":
+          description: Created course
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+
+  /courses/{id}:
+    delete:
+      operationId: deleteCourse
+      tags: [courses]
+      summary: Delete a course
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /sessions:
+    get:
+      operationId: listSessions
+      tags: [sessions]
+      summary: List all session logs
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+    post:
+      operationId: createSession
+      tags: [sessions]
+      summary: Log a new class session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSessionInput"
+      responses:
+        "201":
+          description: Created session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{id}:
+    delete:
+      operationId: deleteSession
+      tags: [sessions]
+      summary: Delete a session log
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +192,143 @@ components:
       required:
         - status
 
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+
+    Company:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - createdAt
+
+    CreateCompanyInput:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+        companyId:
+          type: integer
+        companyName:
+          type: string
+        name:
+          type: string
+        batch:
+          type: string
+        totalHours:
+          type: number
+        hoursUsed:
+          type: number
+        hoursRemaining:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - companyId
+        - companyName
+        - name
+        - batch
+        - totalHours
+        - hoursUsed
+        - hoursRemaining
+        - createdAt
+
+    CreateCourseInput:
+      type: object
+      properties:
+        companyId:
+          type: integer
+        name:
+          type: string
+        batch:
+          type: string
+        totalHours:
+          type: number
+      required:
+        - companyId
+        - name
+        - batch
+        - totalHours
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+        courseId:
+          type: integer
+        courseName:
+          type: string
+        companyId:
+          type: integer
+        companyName:
+          type: string
+        batch:
+          type: string
+        date:
+          type: string
+        hoursTeached:
+          type: number
+        studentsCount:
+          type: integer
+        studentsAbsent:
+          type: integer
+        notes:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - courseId
+        - courseName
+        - companyId
+        - companyName
+        - batch
+        - date
+        - hoursTeached
+        - studentsCount
+        - studentsAbsent
+        - createdAt
+
+    CreateSessionInput:
+      type: object
+      properties:
+        courseId:
+          type: integer
+        date:
+          type: string
+        hoursTeached:
+          type: number
+        studentsCount:
+          type: integer
+        studentsAbsent:
+          type: integer
+        notes:
+          type: string
+      required:
+        - courseId
+        - date
+        - hoursTeached
+        - studentsCount
+        - studentsAbsent

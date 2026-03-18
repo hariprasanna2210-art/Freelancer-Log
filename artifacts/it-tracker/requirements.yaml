@@ -1,0 +1,17 @@
+packages:
+  "framer-motion": "For beautiful page transitions, modal animations, and smooth UI micro-interactions"
+  "clsx": "For conditional class merging in reusable UI components"
+  "tailwind-merge": "To resolve Tailwind class conflicts in customized components"
+  "date-fns": "For elegant date formatting in the sessions log and dashboard"
+  "react-hook-form": "For robust and performant form state management"
+  "@hookform/resolvers": "For Zod schema validation integration with react-hook-form"
+
+images:
+  - path: "artifacts/it-tracker/public/images/dashboard-pattern.png"
+    description: "A very subtle, elegant geometric abstract pattern in light slate and soft indigo, high key, white background, suitable for a professional corporate dashboard header"
+    aspect_ratio: "16:9"
+
+notes:
+  - The API client hooks are generated and available in @workspace/api-client-react.
+  - Zod schemas are used for forms to ensure types match the backend exactly.
+  - Using React Query for aggressive UI cache invalidation to make the app feel instant.
