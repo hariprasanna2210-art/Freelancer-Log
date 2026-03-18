@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Building2, BookOpen, CalendarDays, Settings } from "lucide-react";
+import { LayoutDashboard, Building2, BookOpen, CalendarDays, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -9,12 +9,18 @@ const navigation = [
   { name: "Sessions Log", href: "/sessions", icon: CalendarDays },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  isMobile?: boolean;
+}
+
+export function Sidebar({ isOpen, onClose, isMobile }: SidebarProps) {
   const [location] = useLocation();
 
-  return (
-    <div className="flex h-screen w-72 flex-col bg-card border-r border-border">
-      <div className="p-6">
+  const content = (
+    <div className="flex h-full w-72 flex-col bg-card border-r border-border">
+      <div className="p-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 p-2.5 rounded-xl">
             <BookOpen className="w-6 h-6 text-primary" />
@@ -24,6 +30,14 @@ export function Sidebar() {
             <p className="text-xs text-muted-foreground font-medium">Freelance IT Classes</p>
           </div>
         </div>
+        {isMobile && (
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 px-4 space-y-1.5 mt-4">
@@ -33,6 +47,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={isMobile ? onClose : undefined}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group font-medium",
                 isActive
@@ -62,4 +77,30 @@ export function Sidebar() {
       </div>
     </div>
   );
+
+  if (isMobile) {
+    return (
+      <>
+        {/* Backdrop */}
+        <div
+          className={cn(
+            "fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+            isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          )}
+          onClick={onClose}
+        />
+        {/* Drawer */}
+        <div
+          className={cn(
+            "fixed inset-y-0 left-0 z-50 h-screen shadow-2xl transition-transform duration-300 ease-in-out",
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
+          {content}
+        </div>
+      </>
+    );
+  }
+
+  return <div className="hidden lg:flex h-screen flex-shrink-0">{content}</div>;
 }
