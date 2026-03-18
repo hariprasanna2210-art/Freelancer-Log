@@ -65,3 +65,63 @@ export interface CreateSessionInput {
   studentsAbsent: number;
   notes?: string;
 }
+
+export interface Student {
+  id: number;
+  courseId: number;
+  name: string;
+  createdAt: string;
+}
+
+export interface CreateStudentInput {
+  courseId: number;
+  name: string;
+}
+
+export interface AttendanceRecord {
+  id: number;
+  sessionId: number;
+  studentId: number;
+  studentName: string;
+  isPresent: boolean;
+  remark?: string;
+}
+
+export interface AttendanceInput {
+  studentId: number;
+  isPresent: boolean;
+  remark?: string;
+}
+
+export interface CourseReportSession {
+  id: number;
+  date: string;
+  hoursTeached: number;
+  studentsCount: number;
+  studentsAbsent: number;
+  notes?: string;
+  attendance: AttendanceRecord[];
+}
+
+export interface CourseReport {
+  courseId: number;
+  courseName: string;
+  companyName: string;
+  batch: string;
+  totalHours: number;
+  hoursUsed: number;
+  hoursRemaining: number;
+  startDate?: string;
+  endDate?: string;
+  sessions: CourseReportSession[];
+  students: Student[];
+}
+
+export type GetCourseReportParams = {
+  startDate?: string;
+  endDate?: string;
+};
+
+export type ListStudentsParams = {
+  courseId?: number;
+};

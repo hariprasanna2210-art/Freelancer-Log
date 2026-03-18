@@ -6,11 +6,19 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./attendanceInput";
+export * from "./attendanceRecord";
 export * from "./company";
 export * from "./course";
+export * from "./courseReport";
+export * from "./courseReportSession";
 export * from "./createCompanyInput";
 export * from "./createCourseInput";
 export * from "./createSessionInput";
+export * from "./createStudentInput";
+export * from "./getCourseReportParams";
 export * from "./healthStatus";
+export * from "./listStudentsParams";
 export * from "./session";
+export * from "./student";
 export * from "./successResponse";

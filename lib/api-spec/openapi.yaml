@@ -8,13 +8,12 @@ servers:
     description: Base API path
 tags:
   - name: health
-    description: Health operations
   - name: companies
-    description: Company operations
   - name: courses
-    description: Course operations
   - name: sessions
-    description: Session log operations
+  - name: students
+  - name: attendance
+  - name: reports
 paths:
   /healthz:
     get:
@@ -131,6 +130,33 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
 
+  /courses/{id}/report:
+    get:
+      operationId: getCourseReport
+      tags: [reports]
+      summary: Get full course report data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: startDate
+          in: query
+          schema:
+            type: string
+        - name: endDate
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Course report data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseReport"
+
   /sessions:
     get:
       operationId: listSessions
@@ -182,6 +208,108 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
 
+  /sessions/{sessionId}/attendance:
+    get:
+      operationId: getSessionAttendance
+      tags: [attendance]
+      summary: Get attendance for a session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Attendance list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+    post:
+      operationId: saveSessionAttendance
+      tags: [attendance]
+      summary: Save attendance for a session (bulk upsert)
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/AttendanceInput"
+      responses:
+        "200":
+          description: Saved attendance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /students:
+    get:
+      operationId: listStudents
+      tags: [students]
+      summary: List students, optionally filtered by courseId
+      parameters:
+        - name: courseId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+    post:
+      operationId: createStudent
+      tags: [students]
+      summary: Add a student to a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentInput"
+      responses:
+        "201":
+          description: Created student
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+
+  /students/{id}:
+    delete:
+      operationId: deleteStudent
+      tags: [students]
+      summary: Delete a student
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -189,16 +317,14 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
     SuccessResponse:
       type: object
       properties:
         success:
           type: boolean
-      required:
-        - success
+      required: [success]
 
     Company:
       type: object
@@ -209,18 +335,14 @@ components:
           type: string
         createdAt:
           type: string
-      required:
-        - id
-        - name
-        - createdAt
+      required: [id, name, createdAt]
 
     CreateCompanyInput:
       type: object
       properties:
         name:
           type: string
-      required:
-        - name
+      required: [name]
 
     Course:
       type: object
@@ -243,16 +365,7 @@ components:
           type: number
         createdAt:
           type: string
-      required:
-        - id
-        - companyId
-        - companyName
-        - name
-        - batch
-        - totalHours
-        - hoursUsed
-        - hoursRemaining
-        - createdAt
+      required: [id, companyId, companyName, name, batch, totalHours, hoursUsed, hoursRemaining, createdAt]
 
     CreateCourseInput:
       type: object
@@ -265,11 +378,7 @@ components:
           type: string
         totalHours:
           type: number
-      required:
-        - companyId
-        - name
-        - batch
-        - totalHours
+      required: [companyId, name, batch, totalHours]
 
     Session:
       type: object
@@ -298,18 +407,7 @@ components:
           type: string
         createdAt:
           type: string
-      required:
-        - id
-        - courseId
-        - courseName
-        - companyId
-        - companyName
-        - batch
-        - date
-        - hoursTeached
-        - studentsCount
-        - studentsAbsent
-        - createdAt
+      required: [id, courseId, courseName, companyId, companyName, batch, date, hoursTeached, studentsCount, studentsAbsent, createdAt]
 
     CreateSessionInput:
       type: object
@@ -326,9 +424,106 @@ components:
           type: integer
         notes:
           type: string
-      required:
-        - courseId
-        - date
-        - hoursTeached
-        - studentsCount
-        - studentsAbsent
+      required: [courseId, date, hoursTeached, studentsCount, studentsAbsent]
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+        courseId:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+      required: [id, courseId, name, createdAt]
+
+    CreateStudentInput:
+      type: object
+      properties:
+        courseId:
+          type: integer
+        name:
+          type: string
+      required: [courseId, name]
+
+    AttendanceRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        sessionId:
+          type: integer
+        studentId:
+          type: integer
+        studentName:
+          type: string
+        isPresent:
+          type: boolean
+        remark:
+          type: string
+      required: [id, sessionId, studentId, studentName, isPresent]
+
+    AttendanceInput:
+      type: object
+      properties:
+        studentId:
+          type: integer
+        isPresent:
+          type: boolean
+        remark:
+          type: string
+      required: [studentId, isPresent]
+
+    CourseReportSession:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        hoursTeached:
+          type: number
+        studentsCount:
+          type: integer
+        studentsAbsent:
+          type: integer
+        notes:
+          type: string
+        attendance:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttendanceRecord"
+      required: [id, date, hoursTeached, studentsCount, studentsAbsent, attendance]
+
+    CourseReport:
+      type: object
+      properties:
+        courseId:
+          type: integer
+        courseName:
+          type: string
+        companyName:
+          type: string
+        batch:
+          type: string
+        totalHours:
+          type: number
+        hoursUsed:
+          type: number
+        hoursRemaining:
+          type: number
+        startDate:
+          type: string
+        endDate:
+          type: string
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CourseReportSession"
+        students:
+          type: array
+          items:
+            $ref: "#/components/schemas/Student"
+      required: [courseId, courseName, companyName, batch, totalHours, hoursUsed, hoursRemaining, sessions, students]

@@ -80,6 +80,58 @@ export const DeleteCourseResponse = zod.object({
 });
 
 /**
+ * @summary Get full course report data
+ */
+export const GetCourseReportParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetCourseReportQueryParams = zod.object({
+  startDate: zod.coerce.string().optional(),
+  endDate: zod.coerce.string().optional(),
+});
+
+export const GetCourseReportResponse = zod.object({
+  courseId: zod.number(),
+  courseName: zod.string(),
+  companyName: zod.string(),
+  batch: zod.string(),
+  totalHours: zod.number(),
+  hoursUsed: zod.number(),
+  hoursRemaining: zod.number(),
+  startDate: zod.string().optional(),
+  endDate: zod.string().optional(),
+  sessions: zod.array(
+    zod.object({
+      id: zod.number(),
+      date: zod.string(),
+      hoursTeached: zod.number(),
+      studentsCount: zod.number(),
+      studentsAbsent: zod.number(),
+      notes: zod.string().optional(),
+      attendance: zod.array(
+        zod.object({
+          id: zod.number(),
+          sessionId: zod.number(),
+          studentId: zod.number(),
+          studentName: zod.string(),
+          isPresent: zod.boolean(),
+          remark: zod.string().optional(),
+        }),
+      ),
+    }),
+  ),
+  students: zod.array(
+    zod.object({
+      id: zod.number(),
+      courseId: zod.number(),
+      name: zod.string(),
+      createdAt: zod.string(),
+    }),
+  ),
+});
+
+/**
  * @summary List all session logs
  */
 export const ListSessionsResponseItem = zod.object({
@@ -118,5 +170,78 @@ export const DeleteSessionParams = zod.object({
 });
 
 export const DeleteSessionResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Get attendance for a session
+ */
+export const GetSessionAttendanceParams = zod.object({
+  sessionId: zod.coerce.number(),
+});
+
+export const GetSessionAttendanceResponseItem = zod.object({
+  id: zod.number(),
+  sessionId: zod.number(),
+  studentId: zod.number(),
+  studentName: zod.string(),
+  isPresent: zod.boolean(),
+  remark: zod.string().optional(),
+});
+export const GetSessionAttendanceResponse = zod.array(
+  GetSessionAttendanceResponseItem,
+);
+
+/**
+ * @summary Save attendance for a session (bulk upsert)
+ */
+export const SaveSessionAttendanceParams = zod.object({
+  sessionId: zod.coerce.number(),
+});
+
+export const SaveSessionAttendanceBodyItem = zod.object({
+  studentId: zod.number(),
+  isPresent: zod.boolean(),
+  remark: zod.string().optional(),
+});
+export const SaveSessionAttendanceBody = zod.array(
+  SaveSessionAttendanceBodyItem,
+);
+
+export const SaveSessionAttendanceResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary List students, optionally filtered by courseId
+ */
+export const ListStudentsQueryParams = zod.object({
+  courseId: zod.coerce.number().optional(),
+});
+
+export const ListStudentsResponseItem = zod.object({
+  id: zod.number(),
+  courseId: zod.number(),
+  name: zod.string(),
+  createdAt: zod.string(),
+});
+export const ListStudentsResponse = zod.array(ListStudentsResponseItem);
+
+/**
+ * @summary Add a student to a course
+ */
+export const CreateStudentBody = zod.object({
+  courseId: zod.number(),
+  name: zod.string(),
+});
+
+/**
+ * @summary Delete a student
+ */
+export const DeleteStudentParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteStudentResponse = zod.object({
   success: zod.boolean(),
 });

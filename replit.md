@@ -16,6 +16,15 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Features
+
+- Companies management
+- Courses per company with hour budget tracking (remaining hours auto-deducted on session log)
+- Students enrollment per course/batch
+- Daily session logging with per-student attendance marking and individual remarks
+- PDF report generation: Full Course / Daily / Weekly / Custom date range
+- Mobile responsive with slide-in sidebar navigation
+
 ## Structure
 
 ```text

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Building2, BookOpen, CalendarDays, X } from "lucide-react";
+import { LayoutDashboard, Building2, BookOpen, CalendarDays, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -7,7 +7,18 @@ const navigation = [
   { name: "Companies", href: "/companies", icon: Building2 },
   { name: "Courses", href: "/courses", icon: BookOpen },
   { name: "Sessions Log", href: "/sessions", icon: CalendarDays },
+  { name: "Reports", href: "/reports", icon: FileText },
 ];
+
+const pageTitleMap: Record<string, string> = {
+  "/": "Dashboard",
+  "/companies": "Companies",
+  "/courses": "Courses",
+  "/sessions": "Sessions Log",
+  "/reports": "Reports",
+};
+
+export { pageTitleMap };
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -40,7 +51,7 @@ export function Sidebar({ isOpen, onClose, isMobile }: SidebarProps) {
         )}
       </div>
 
-      <nav className="flex-1 px-4 space-y-1.5 mt-4">
+      <nav className="flex-1 px-4 space-y-1.5 mt-2">
         {navigation.map((item) => {
           const isActive = location === item.href;
           return (
@@ -81,7 +92,6 @@ export function Sidebar({ isOpen, onClose, isMobile }: SidebarProps) {
   if (isMobile) {
     return (
       <>
-        {/* Backdrop */}
         <div
           className={cn(
             "fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
@@ -89,7 +99,6 @@ export function Sidebar({ isOpen, onClose, isMobile }: SidebarProps) {
           )}
           onClick={onClose}
         />
-        {/* Drawer */}
         <div
           className={cn(
             "fixed inset-y-0 left-0 z-50 h-screen shadow-2xl transition-transform duration-300 ease-in-out",
